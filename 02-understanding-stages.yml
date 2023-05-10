@@ -15,26 +15,41 @@ stages:
   - job: FirstJob
     steps:
     - bash: echo Build FirstJob
-  - job: SecondJob
-    steps:
-    - bash: echo Build SecondJob
-- stage: DevDeploy
-  dependsOn: Build
-  jobs:
-    - job: DevDeployJob
-      steps:
-      - bash: echo Build DevDeployJob
-- stage: QADeploy
-  dependsOn: Build
-  jobs:
-    - job: QADeployJob
-      steps:
-      - bash: echo Build QADeployJob
-- stage: ProdDeploy
-  dependsOn:
-  - DevDeploy
-  - QADeploy
-  jobs:
-    - job: ProdDeployJob
-      steps:
-      - bash: echo Build ProdDeployJob
+    - bash: echo $(Build.SourcesDirectory)
+    - bash: ls -r $(System.DefaultWorkingDirectory)
+    - bash: java -version
+    - bash: node --version
+    - bash: python --version
+    - bash: mvn -version
+    - bash: ls -r $(System.DefaultWorkingDirectory)
+    - task: CopyFiles@2
+      inputs:
+        SourceFolder: '$(Build.ArtifactStagingDirectory)'
+        Contents: |
+          **/*.yaml
+          **/*.tf
+        TargetFolder: '$(Build.ArtifactStagingDirectory)'
+    - bash: ls -r $(Build.ArtifactStagingDirectory)
+#   - job: SecondJob
+#     steps:
+#     - bash: echo Build SecondJob
+# - stage: DevDeploy
+#   dependsOn: Build
+#   jobs:
+#     - job: DevDeployJob
+#       steps:
+#       - bash: echo Build DevDeployJob
+# - stage: QADeploy
+#   dependsOn: Build
+#   jobs:
+#     - job: QADeployJob
+#       steps:
+#       - bash: echo Build QADeployJob
+# - stage: ProdDeploy
+#   dependsOn:
+#   - DevDeploy
+#   - QADeploy
+#   jobs:
+#     - job: ProdDeployJob
+#       steps:
+#       - bash: echo Build ProdDeployJob
